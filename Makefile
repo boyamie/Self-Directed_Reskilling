@@ -17,7 +17,7 @@ endif
 JOURNAL ?= $(firstword $(wildcard ../journal ../paper/CS/journal ../../paper/CS/journal))
 
 .PHONY: help check validate aggregate export week snapshot \
-        ots-verify ots-upgrade ots-backfill journal-manifest journal-verify
+        ots-verify ots-upgrade ots-audit ots-backfill journal-manifest journal-verify
 help:
 	@echo "make check             run the tool's self-tests"
 	@echo "make validate          schema + timing checks over logs/"
@@ -28,6 +28,7 @@ help:
 	@echo "make journal-verify    check the journal against the committed manifest"
 	@echo "make ots-verify        verify OpenTimestamps proofs in derived/ots/"
 	@echo "make ots-upgrade       complete pending proofs once Bitcoin confirms"
+	@echo "make ots-audit         check every commit in history has a bound proof"
 
 check:
 	@$(PY) tools/calog.py selftest
@@ -74,18 +75,31 @@ ots-upgrade:
 	@rm -f derived/ots/*.ots.bak
 	@echo "upgraded proofs still pending are left as they are; re-run tomorrow"
 
-# Stamps commits the hook could not stamp (derived/ots/UNSTAMPED.txt).
-# UNSTAMPED.txt is deliberately not cleared: a late stamp proves the commit
-# existed by the time it was stamped, not by its commit date, and the paper
-# should be able to say which proofs are late and by how much.
+# Coverage is derived from git history, not from derived/ots/UNSTAMPED.txt.
+# The ledger is written by the post-commit hook, so it only knows the failures
+# the hook was there to see; a commit made through the GitHub web UI, or from a
+# clone where core.hooksPath was never set, leaves no entry and would never
+# appear in a worklist built from it. See tools/ots_audit.py.
+ots-audit:
+	@$(PY) tools/ots_audit.py
+
+# Stamps every commit that has no proof. UNSTAMPED.txt is appended to rather
+# than cleared: a late stamp proves the commit existed by the time it was
+# stamped, not by its commit date, and the paper should be able to say which
+# proofs are late instead of presenting them all as contemporaneous.
 ots-backfill:
 	@command -v ots >/dev/null 2>&1 || { echo "ots not installed (pipx install opentimestamps-client)"; exit 1; }
-	@test -s derived/ots/UNSTAMPED.txt || { echo "no unstamped commits recorded"; exit 0; }
-	@cut -f1 derived/ots/UNSTAMPED.txt | sort -u | while read h; do \
+	@mkdir -p derived/ots
+	@n=0; for h in `git rev-list HEAD`; do \
 	  test -f "derived/ots/$$h.txt.ots" && continue; \
 	  printf '%s\n' "$$h" > "derived/ots/$$h.txt"; \
-	  if ots stamp "derived/ots/$$h.txt" >/dev/null 2>&1; then echo "stamped $$h (late)"; \
+	  if ots stamp "derived/ots/$$h.txt" >/dev/null 2>&1; then \
+	    echo "stamped $$h (late)"; n=`expr $$n + 1`; \
+	    grep -q "^$$h	" derived/ots/UNSTAMPED.txt 2>/dev/null || \
+	      printf '%s\tstamped late by ots-backfill; no proof existed at commit time\n' "$$h" >> derived/ots/UNSTAMPED.txt; \
 	  else rm -f "derived/ots/$$h.txt"; echo "FAILED  $$h"; fi; \
-	done
+	done; \
+	test $$n -gt 0 || echo "every commit already has a proof"
 	@echo "note: a late stamp bounds the commit from above only -- it proves the"
 	@echo "      hash existed by the stamping time, not by the commit date."
+	@echo "      commit the new proofs; that commit is stamped in turn."

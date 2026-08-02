@@ -105,6 +105,30 @@ Two mechanisms are used instead:
 GitHub's public push-event feed is not relied on: it is retained for
 approximately 90 days and W1 events will be gone before peer review.
 
+### 5.1 Coverage is audited, not assumed
+
+The hook in mechanism 1 runs only where it is installed. `core.hooksPath` is
+local configuration and is not carried by a clone, so a commit made through the
+GitHub web interface, from a fresh clone, or by CI is not anchored and leaves
+no record of not having been. A ledger written by the hook cannot report gaps
+the hook was absent for.
+
+Coverage is therefore derived from `git rev-list`, by `tools/ots_audit.py`, and
+every commit is required to have a proof that binds to it: the payload contains
+that commit's hash and the proof commits to that payload. A proof that is
+present but does not bind fails the audit rather than warning, because in any
+check that only looks for the file it counts as coverage while providing none.
+
+`make ots-audit` must exit 0 before the `w0` tag is cut and before the release
+after W12. That is the operational definition of "the record up to this point
+is anchored".
+
+Anchors made after the fact are recorded as such in `derived/ots/UNSTAMPED.txt`
+and reported by the audit. A late anchor bounds its commit from above only: it
+shows the hash existed by the time it was stamped, not that it existed at the
+commit date. The paper reports the audit as it stands, including which proofs
+are late and which commits were anchored only in retrospect.
+
 ## 6. Amendments
 
 Append-only. Each entry: date, section touched, what changed, why.

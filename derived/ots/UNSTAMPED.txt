@@ -3,3 +3,6 @@ e2b8e43263e54d3406c59dc5145ffc34066b4a29	ots not installed at commit time (pre-d
 bc01178f89f87c46d6d8845c5a22d512277061e3	ots not found; pip install opentimestamps-client
 159e226e3e9df714f043fb40d7923b3d37b21987	ots not found; pip install opentimestamps-client
 ac1765a31be87d8da46c0490dca1a3993ed45850	ots not found; pip install opentimestamps-client
+e0507208b28bf588f985748fa6733ef8f32b0227	stamped late by ots-backfill; no proof existed at commit time
+5f09f1d293bc02860838f130606231da9d264668	stamped late by ots-backfill; no proof existed at commit time
+fb13193f37459f6f911e511b930eef7a286f7ea5	stamped late by ots-backfill; no proof existed at commit time
