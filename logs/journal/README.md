@@ -23,6 +23,22 @@ confidence; they recompute the hashes and compare against the manifest as it
 stood in that week's commit. A file edited afterwards will not match, and a
 file created afterwards will not appear in the earlier manifest at all.
 
+That check is one command, and it is the reader's, not the author's:
+
+```bash
+git checkout <commit-for-that-week> -- logs/journal/MANIFEST.tsv
+make journal-verify JOURNAL=/path/to/the/journal
+```
+
+Exit `0` every recorded file still matches, `1` something changed or is gone,
+`2` the manifest itself could not be read. The third is kept separate from the
+second on purpose: a wrong path or a hand-edited manifest is an operational
+mistake and is not a finding about the journal.
+
+Files on disk that the manifest does not list are reported and do not fail the
+check. A manifest is always older than the journal it describes, so entries
+written after it are the normal case.
+
 **Does not prove.** That an entry is truthful, or that an excerpt quoted in the
 paper is representative of the file it came from. The manifest is evidence
 about timing only, and the paper should say so rather than let the presence of

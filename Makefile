@@ -24,6 +24,7 @@ help:
 	@echo "make export            LaTeX fragments into derived/"
 	@echo "make week W=3          show the path of this week's log"
 	@echo "make journal-manifest  re-hash the journal at JOURNAL=$(JOURNAL)"
+	@echo "make journal-verify    check the journal against the committed manifest"
 	@echo "make ots-verify        verify OpenTimestamps proofs in derived/ots/"
 
 check:
@@ -45,6 +46,12 @@ journal-manifest:
 	@test -n "$(JOURNAL)" || { echo "journal directory not found next to this clone."; \
 	  echo "run: make journal-manifest JOURNAL=/path/to/journal"; exit 1; }
 	@$(PY) tools/journal_manifest.py "$(JOURNAL)" --write
+
+# For whoever checks the record: 0 verified, 1 mismatch, 2 manifest unreadable.
+journal-verify:
+	@test -n "$(JOURNAL)" || { echo "journal directory not found next to this clone."; \
+	  echo "run: make journal-verify JOURNAL=/path/to/journal"; exit 2; }
+	@$(PY) tools/journal_manifest.py "$(JOURNAL)" --verify
 
 ots-verify:
 	@command -v ots >/dev/null 2>&1 || { echo "ots not installed (pip install opentimestamps-client)"; exit 1; }

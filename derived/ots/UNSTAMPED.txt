@@ -1,3 +1,4 @@
 906874904bd544bd10eda57fbf78449e4e79e240	ots not installed at commit time (pre-dates the ledger)
 e2b8e43263e54d3406c59dc5145ffc34066b4a29	ots not installed at commit time (pre-dates the ledger)
 bc01178f89f87c46d6d8845c5a22d512277061e3	ots not found; pip install opentimestamps-client
+159e226e3e9df714f043fb40d7923b3d37b21987	ots not found; pip install opentimestamps-client
