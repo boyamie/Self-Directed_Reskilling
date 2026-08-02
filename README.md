@@ -26,7 +26,6 @@ logs/gates/                  M1..M5.toml  — second author's rulings
 logs/journal/                daily entries, YYYY-MM-DD.md
 tools/calog.py               validate / aggregate / export (no dependencies)
 derived/                     generated; committed so the paper can cite a state
-paper/                       review notes and .tex fragments for the manuscript
 ```
 
 ## Weekly routine (~5 min)

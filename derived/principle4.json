@@ -1,0 +1,14 @@
+{
+  "verdict": "indeterminate",
+  "n_weeks_finalised": 0,
+  "n_support": 0,
+  "support_weeks": [],
+  "refutation_clause_met": false,
+  "selected": [],
+  "secondary_over_all_candidates": {
+    "n_candidates": 0,
+    "n_outside_set": 0,
+    "n_uncertain": 0,
+    "n_ai_assisted": 0
+  }
+}

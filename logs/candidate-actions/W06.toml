@@ -1,0 +1,43 @@
+# Candidate-action log — W06
+# Protocol §2. Fill this in BEFORE taking the week's action.
+# Set status = "final" when complete; templates are skipped by the validator.
+
+status      = "template"     # template | final
+week        = 6
+week_start  = 2026-09-07
+week_end    = 2026-09-13
+recorded_at = 2026-09-07T09:00:00+09:00   # actual moment of recording; do not backdate
+recorded_by = "first_author"
+
+# (a) The full set of candidate actions considered this week — enumerate all,
+#     including options rejected immediately. A single-entry list is not a
+#     candidate set and the validator will say so.
+# (b) ai_assisted: was this option generated, surfaced, or made tractable with
+#     AI assistance?  yes | no | partly   (ai_note required unless "no")
+# (d) without_ai: would this have been inside the opportunity set you would
+#     have considered on your own?  in_set | outside_set | uncertain
+
+[[candidate]]
+id          = "W06-A1"
+description = ""
+ai_assisted = "no"
+ai_note     = ""
+without_ai  = "in_set"
+
+[[candidate]]
+id          = "W06-A2"
+description = ""
+ai_assisted = "no"
+ai_note     = ""
+without_ai  = "in_set"
+
+# (c) The action selected and the rationale AT THE TIME of selection.
+#     Do not revise this later; add a note to [aftermath] instead.
+[selected]
+action_id            = "W06-A1"
+rationale_at_time    = """
+"""
+
+# Optional, written at the end of the week. Never edit fields above.
+[aftermath]
+note = ""

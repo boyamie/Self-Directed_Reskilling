@@ -1,0 +1,26 @@
+# Gate adjudication — M5. Protocol §3.
+# Ruled by the SECOND author, within 48 hours of the gate date.
+# The criterion below is fixed; do not reword it to fit the evidence.
+
+status        = "template"      # template | final
+gate          = "M5"
+gate_date     = 2026-10-25
+week          = 12
+criterion     = """GO: two paid engagements closed"""
+failure_response = """Redesign price and targeting once and retry; if still zero, pivot to public-sector SBOM work"""
+
+adjudicator   = "second_author"
+ruled_at      = 2026-10-25T21:00:00+09:00   # must be within 48h of gate_date
+ruling        = "pass"          # pass | fail
+
+# Evidence supplied by the first author (links, file paths, counts).
+evidence = """
+"""
+
+# Required reading test: was the criterion met on the protocol's own wording,
+# or only on a looser reading? A looser reading is recorded as a FAIL (§3).
+strict_reading_met = true
+
+# Any disagreement between the authors, verbatim. Reported in the paper as-is.
+disagreement = """
+"""

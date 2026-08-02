@@ -1,0 +1,14 @@
+#!/bin/sh
+# OpenTimestamps anchoring — PROTOCOL.md section 5.
+# Git commit dates are set by the committing machine and prove nothing about
+# when a commit was made. This anchors the commit hash to a public timeline.
+# No-op when `ots` is absent, so the hook never blocks a commit.
+
+command -v ots >/dev/null 2>&1 || exit 0
+
+hash=$(git rev-parse HEAD)
+dir="derived/ots"
+mkdir -p "$dir"
+printf '%s\n' "$hash" > "$dir/$hash.txt"
+ots stamp "$dir/$hash.txt" >/dev/null 2>&1 || exit 0
+echo "ots: stamped $hash (commit the .ots proof, then 'ots upgrade' after ~a day)"
