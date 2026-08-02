@@ -23,6 +23,7 @@ fixed before this tool showed them the W0 numbers, and that is the part a
 reader can check.
 """
 
+import hashlib
 import json
 import os
 import re
@@ -88,7 +89,32 @@ def unrated(rows):
     return [r["n"] for r in rows if r["rating"] is None]
 
 
+def table_digest(rows):
+    """Fingerprint of the Part B table as extracted: numbers, terms, ratings.
+
+    Stored in the W0 record so that a later edit to the snapshot is detectable
+    from the record itself, without depending on a freeze rule being enforced
+    somewhere else.
+    """
+    canonical = "".join("%d\t%s\t%s\n" % (r["n"], r["term"], r["rating"])
+                        for r in rows)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def cmd_extract(argv):
+    # The W0 record is written once. Re-extracting after editing Part B would
+    # rewrite it from the edited table, and because `compare` checks the W12
+    # sheet against this file rather than against the original wording, a
+    # changed term would launder itself: both sides would agree, and at W12
+    # nobody remembers what term 20 used to say.
+    if os.path.exists(W0_JSON):
+        print("error: %s already exists and is the fixed W0 record.\n"
+              "       Before w0: delete it deliberately and re-extract; the\n"
+              "       change is then visible in git. After w0: do not -- record\n"
+              "       the correction as a dated amendment in PROTOCOL.md 6."
+              % os.path.relpath(W0_JSON, ROOT), file=sys.stderr)
+        return 2
+
     rows = parse_table(SNAPSHOT, require_ratings=True)
     blank = unrated(rows)
     if blank:
@@ -102,7 +128,9 @@ def cmd_extract(argv):
         json.dump({"terms": rows,
                    "total": sum(r["rating"] for r in rows),
                    "distribution": {str(k): sum(1 for r in rows if r["rating"] == k)
-                                    for k in range(5)}},
+                                    for k in range(5)},
+                   "source": os.path.relpath(SNAPSHOT, ROOT),
+                   "source_table_sha256": table_digest(rows)},
                   fh, indent=2, ensure_ascii=False)
         fh.write("\n")
     print("wrote %s -- %d terms, total %d/80"
@@ -181,7 +209,33 @@ def cmd_compare(argv):
         return 1
 
     with open(W0_JSON, "r", encoding="utf-8") as fh:
-        w0 = {r["n"]: r for r in json.load(fh)["terms"]}
+        record = json.load(fh)
+    w0 = {r["n"]: r for r in record["terms"]}
+
+    # The snapshot must still say what it said when the W0 record was taken.
+    # Checking the W12 sheet against the W0 record is not enough on its own:
+    # both are generated from the snapshot, so an edit there followed by a
+    # re-extract would agree with itself.
+    stored = record.get("source_table_sha256")
+    if stored:
+        try:
+            current = table_digest(parse_table(SNAPSHOT, require_ratings=True))
+        except SystemExit as exc:
+            print("error: cannot re-read Part B to check it is unchanged: %s"
+                  % exc, file=sys.stderr)
+            return 1
+        if current != stored:
+            print("refusing to compare: Part B of %s has changed since the W0\n"
+                  "record was taken.\n"
+                  "  recorded %s\n"
+                  "  now      %s\n"
+                  "The W0 record is the measurement; a snapshot edited after it\n"
+                  "was taken means the two are no longer the same instrument.\n"
+                  "Restore the snapshot from the w0 tag, or record what changed\n"
+                  "as a dated amendment in PROTOCOL.md 6 and say so in the paper."
+                  % (os.path.relpath(SNAPSHOT, ROOT), stored[:16], current[:16]),
+                  file=sys.stderr)
+            return 1
 
     print("%-3s %-44s %4s %4s %5s" % ("#", "term", "W0", "W12", "delta"))
     t0 = t12 = 0
