@@ -255,6 +255,25 @@ def cmd_compare(argv):
         print("  rated %d: %2d -> %2d" % (k,
               sum(1 for r in w0.values() if r["rating"] == k),
               sum(1 for r in w12 if r["rating"] == k)))
+
+    # A fall printed as a number alone reads as lost competence. Usually it is
+    # the opposite: the W0 rating was confident about a different concept, and
+    # the two glosses are the only place that shows it. They are the finding
+    # for that term, so they belong in the output and not only in the JSON.
+    fell = [(r, w0[r["n"]]) for r in w12 if r["rating"] < w0[r["n"]]["rating"]]
+    if fell:
+        print("\n%d rating(s) fell. Each is shown with both glosses, because a"
+              % len(fell))
+        print("negative delta cannot be read without them:\n")
+        for r, before in fell:
+            print("  %d. %s  %d -> %d (%+d)"
+                  % (r["n"], r["term"], before["rating"], r["rating"],
+                     r["rating"] - before["rating"]))
+            print("     W0 : %s" % (before["gloss"] or "(none)"))
+            print("     W12: %s" % (r["gloss"] or "(none)"))
+        print("\nA term rated high at W0 on a mistaken reading falls once the\n"
+              "author learns what it denotes. That is a result, not a loss, and\n"
+              "the paper should report it as one.")
     sys.stdout.flush()
     print("\nA rating is a self-report at both ends. The pair measures what the\n"
           "author believes changed, which is not the same as what changed.",
