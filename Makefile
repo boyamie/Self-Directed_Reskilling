@@ -17,13 +17,17 @@ endif
 JOURNAL ?= $(firstword $(wildcard ../journal ../paper/CS/journal ../../paper/CS/journal))
 
 .PHONY: help check validate aggregate export week snapshot \
-        ots-verify ots-upgrade ots-audit ots-backfill journal-manifest journal-verify
+        ots-verify ots-upgrade ots-audit ots-backfill journal-manifest journal-verify \
+        terms-extract terms-sheet terms-compare
 help:
 	@echo "make check             run the tool's self-tests"
 	@echo "make validate          schema + timing checks over logs/"
 	@echo "make aggregate         rebuild derived/ (Principle 4 verdict, gates, hours)"
 	@echo "make export            LaTeX fragments into derived/"
 	@echo "make week W=3          show the path of this week's log"
+	@echo "make terms-extract     Part B ratings -> derived/terms_w0.json"
+	@echo "make terms-sheet       W12: blank sheet, same terms, no ratings"
+	@echo "make terms-compare     W12 vs W0 (needs the W12 sheet committed)"
 	@echo "make journal-manifest  re-hash the journal at JOURNAL=$(JOURNAL)"
 	@echo "make journal-verify    check the journal against the committed manifest"
 	@echo "make ots-verify        verify OpenTimestamps proofs in derived/ots/"
@@ -44,6 +48,18 @@ export: aggregate
 
 week:
 	@$(PY) tools/calog.py new-week $(W)
+
+# The W0/W12 terminology pair. terms-compare is the only one that prints a W0
+# rating, and it refuses until logs/terms_w12.md is committed -- so "rated
+# without consulting the W0 file" is in the record rather than asserted.
+terms-extract:
+	@$(PY) tools/terms.py extract
+
+terms-sheet:
+	@$(PY) tools/terms.py sheet
+
+terms-compare:
+	@$(PY) tools/terms.py compare
 
 journal-manifest:
 	@test -n "$(JOURNAL)" || { echo "journal directory not found next to this clone."; \

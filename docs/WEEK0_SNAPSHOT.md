@@ -77,6 +77,13 @@ Record the total and the distribution, not just the total.
 
 **Total / 80:** ______ **Distribution** (count at each of 0,1,2,3,4): ______
 
+When this table is filled, run `make terms-extract`. At W12 the procedure is
+`make terms-sheet` — which writes the same twenty terms with the ratings
+withheld — then fill it, **commit it**, then `make terms-compare`. Compare is
+the only command that prints a W0 rating and it refuses to run until the W12
+sheet is committed, so the claim that the second rating was made without
+consulting the first is a matter of record rather than of memory.
+
 ## Part C — Competing-concept prose, fixed (~40 min) · second
 
 M1 (W2) decides between the CRA track and a rival venture concept. Write both

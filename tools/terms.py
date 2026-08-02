@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+"""The W0/W12 terminology pair. Python 3.11+, standard library only.
+
+    tools/terms.py extract       read Part B of the snapshot -> derived/terms_w0.json
+    tools/terms.py sheet         write logs/terms_w12.md, terms only, no ratings
+    tools/terms.py compare       W0 vs W12, once the W12 sheet is committed
+
+Exit codes: 0 fine, 1 the data is not ready, 2 wrong arguments or unreadable input.
+
+Why `compare` refuses to run against an uncommitted sheet
+---------------------------------------------------------
+The snapshot asks for the W12 ratings to be made "without consulting this file
+first". Nothing can stop someone opening docs/WEEK0_SNAPSHOT.md — it is in the
+repository they are working in. What can be arranged is that the claim is
+checkable rather than asserted: fill the blank sheet, commit it, and the commit
+is anchored by .githooks/post-commit before any W0 value has been printed.
+`compare` is the only command here that prints a W0 rating, and it will not run
+until the W12 sheet is committed and unmodified. So the order of events is in
+the record, not in a promise.
+
+This does not prove the author did not peek. It proves the W12 numbers were
+fixed before this tool showed them the W0 numbers, and that is the part a
+reader can check.
+"""
+
+import json
+import os
+import re
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SNAPSHOT = os.path.join(ROOT, "docs", "WEEK0_SNAPSHOT.md")
+W0_JSON = os.path.join(ROOT, "derived", "terms_w0.json")
+W12_SHEET = os.path.join(ROOT, "logs", "terms_w12.md")
+
+N_TERMS = 20
+HEADER_RE = re.compile(r"^\|\s*#\s*\|\s*Term\s*\|\s*Rating")
+ROW_RE = re.compile(r"^\|\s*(\d+)\s*\|(.*)$")
+
+
+def git(*args):
+    return subprocess.run(["git", "-C", ROOT] + list(args),
+                          capture_output=True, text=True)
+
+
+def parse_table(path, require_ratings):
+    """Pull the numbered term table out of a markdown file."""
+    with open(path, "r", encoding="utf-8") as fh:
+        lines = fh.read().splitlines()
+
+    start = next((i for i, l in enumerate(lines) if HEADER_RE.match(l)), None)
+    if start is None:
+        raise SystemExit("error: no term table found in %s" % path)
+
+    rows = []
+    for line in lines[start + 1:]:
+        m = ROW_RE.match(line)
+        if not m:
+            if rows:
+                break
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 3:
+            raise SystemExit("error: %s: malformed row %r" % (path, line.strip()))
+        num, term, rating = cells[0], cells[1], cells[2]
+        gloss = cells[3] if len(cells) > 3 else ""
+        entry = {"n": int(num), "term": term, "gloss": gloss}
+        if rating == "":
+            if require_ratings:
+                entry["rating"] = None
+            else:
+                entry["rating"] = None
+        else:
+            if not re.fullmatch(r"[0-4]", rating):
+                raise SystemExit("error: %s: term %s has rating %r; expected 0-4"
+                                 % (path, num, rating))
+            entry["rating"] = int(rating)
+        rows.append(entry)
+
+    if len(rows) != N_TERMS:
+        raise SystemExit("error: %s: found %d terms, expected %d"
+                         % (path, len(rows), N_TERMS))
+    return rows
+
+
+def unrated(rows):
+    return [r["n"] for r in rows if r["rating"] is None]
+
+
+def cmd_extract(argv):
+    rows = parse_table(SNAPSHOT, require_ratings=True)
+    blank = unrated(rows)
+    if blank:
+        print("Part B is not filled in yet: %d of %d terms have no rating (%s)"
+              % (len(blank), N_TERMS,
+                 ", ".join(str(n) for n in blank[:8]) + ("..." if len(blank) > 8 else "")),
+              file=sys.stderr)
+        return 1
+    os.makedirs(os.path.dirname(W0_JSON), exist_ok=True)
+    with open(W0_JSON, "w", encoding="utf-8") as fh:
+        json.dump({"terms": rows,
+                   "total": sum(r["rating"] for r in rows),
+                   "distribution": {str(k): sum(1 for r in rows if r["rating"] == k)
+                                    for k in range(5)}},
+                  fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+    print("wrote %s -- %d terms, total %d/80"
+          % (os.path.relpath(W0_JSON, ROOT), len(rows),
+             sum(r["rating"] for r in rows)))
+    return 0
+
+
+def cmd_sheet(argv):
+    if os.path.exists(W12_SHEET):
+        print("error: %s already exists; refusing to overwrite it"
+              % os.path.relpath(W12_SHEET, ROOT), file=sys.stderr)
+        return 2
+    rows = parse_table(SNAPSHOT, require_ratings=False)
+    os.makedirs(os.path.dirname(W12_SHEET), exist_ok=True)
+    body = [
+        "# W12 terminology re-assessment",
+        "",
+        "The same twenty terms as Part B of the Week-0 snapshot, in the same",
+        "order, with the ratings withheld. Rate these **without opening**",
+        "`docs/WEEK0_SNAPSHOT.md`, on the identical scale:",
+        "",
+        "- **0** have not heard the term · **1** recognise it, could not define it",
+        "- **2** could define it in a sentence · **3** could explain it to a client",
+        "- **4** could produce or audit the artifact it names",
+        "",
+        "Then commit this file. `tools/terms.py compare` will not print a single",
+        "W0 rating until it is committed, so the record shows these numbers were",
+        "fixed before the earlier ones were back in view.",
+        "",
+        "| # | Term | Rating (0–4) | One line: what I think it means |",
+        "|---|---|---|---|",
+    ]
+    for r in rows:
+        body.append("| %d | %s | | |" % (r["n"], r["term"]))
+    body += ["", "**Total / 80:** ______", ""]
+    with open(W12_SHEET, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(body))
+    print("wrote %s -- %d terms, no ratings"
+          % (os.path.relpath(W12_SHEET, ROOT), len(rows)))
+    return 0
+
+
+def sheet_is_committed():
+    rel = os.path.relpath(W12_SHEET, ROOT)
+    if git("ls-files", "--error-unmatch", rel).returncode != 0:
+        return False, "%s is not committed yet" % rel
+    if git("diff", "--quiet", "HEAD", "--", rel).returncode != 0:
+        return False, "%s has uncommitted changes" % rel
+    return True, ""
+
+
+def cmd_compare(argv):
+    if not os.path.exists(W0_JSON):
+        print("error: %s missing; run `tools/terms.py extract` first"
+              % os.path.relpath(W0_JSON, ROOT), file=sys.stderr)
+        return 1
+    if not os.path.exists(W12_SHEET):
+        print("error: %s missing; run `tools/terms.py sheet` first"
+              % os.path.relpath(W12_SHEET, ROOT), file=sys.stderr)
+        return 1
+
+    w12 = parse_table(W12_SHEET, require_ratings=True)
+    blank = unrated(w12)
+    if blank:
+        print("the W12 sheet is not finished: %d term(s) unrated (%s)"
+              % (len(blank), ", ".join(str(n) for n in blank)), file=sys.stderr)
+        return 1
+
+    ok, why = sheet_is_committed()
+    if not ok:
+        print("refusing to print W0 ratings: %s.\n"
+              "Commit the W12 sheet first -- the point of this check is that the\n"
+              "W12 numbers are anchored before the W0 numbers are shown."
+              % why, file=sys.stderr)
+        return 1
+
+    with open(W0_JSON, "r", encoding="utf-8") as fh:
+        w0 = {r["n"]: r for r in json.load(fh)["terms"]}
+
+    print("%-3s %-44s %4s %4s %5s" % ("#", "term", "W0", "W12", "delta"))
+    t0 = t12 = 0
+    for r in w12:
+        before = w0.get(r["n"])
+        if before is None or before["term"] != r["term"]:
+            print("error: term %d does not match the W0 list (%r vs %r)"
+                  % (r["n"], before and before["term"], r["term"]), file=sys.stderr)
+            return 2
+        d = r["rating"] - before["rating"]
+        t0 += before["rating"]
+        t12 += r["rating"]
+        print("%-3d %-44s %4d %4d %+5d"
+              % (r["n"], r["term"][:44], before["rating"], r["rating"], d))
+    print("\ntotal %d/80 -> %d/80 (%+d)" % (t0, t12, t12 - t0))
+    for k in range(5):
+        print("  rated %d: %2d -> %2d" % (k,
+              sum(1 for r in w0.values() if r["rating"] == k),
+              sum(1 for r in w12 if r["rating"] == k)))
+    sys.stdout.flush()
+    print("\nA rating is a self-report at both ends. The pair measures what the\n"
+          "author believes changed, which is not the same as what changed.",
+          file=sys.stderr)
+    return 0
+
+
+COMMANDS = {"extract": cmd_extract, "sheet": cmd_sheet, "compare": cmd_compare}
+
+
+def main(argv):
+    if not argv or argv[0] not in COMMANDS:
+        print(__doc__.strip())
+        return 2
+    return COMMANDS[argv[0]](argv[1:])
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
