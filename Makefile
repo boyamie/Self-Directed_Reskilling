@@ -18,7 +18,7 @@ JOURNAL ?= $(firstword $(wildcard ../journal ../paper/CS/journal ../../paper/CS/
 
 .PHONY: help check validate aggregate export week snapshot \
         ots-verify ots-upgrade ots-audit ots-backfill journal-manifest journal-verify \
-        terms-extract terms-sheet terms-compare
+        terms-extract terms-sheet terms-compare prereg-check
 help:
 	@echo "make check             run the tool's self-tests"
 	@echo "make validate          schema + timing checks over logs/"
@@ -33,6 +33,7 @@ help:
 	@echo "make ots-verify        verify OpenTimestamps proofs in derived/ots/"
 	@echo "make ots-upgrade       complete pending proofs once Bitcoin confirms"
 	@echo "make ots-audit         check every commit in history has a bound proof"
+	@echo "make prereg-check      registration vs protocol drift (--filing before you file)"
 
 check:
 	@$(PY) tools/calog.py selftest
@@ -98,6 +99,11 @@ ots-upgrade:
 # appear in a worklist built from it. See tools/ots_audit.py.
 ots-audit:
 	@$(PY) tools/ots_audit.py
+
+# Run with FILING=1 immediately before filing: it then also requires every
+# [FILL] placeholder in the registration to have been resolved.
+prereg-check:
+	@$(PY) tools/prereg_check.py $(if $(FILING),--filing,)
 
 # Stamps every commit that has no proof. UNSTAMPED.txt is appended to rather
 # than cleared: a late stamp proves the commit existed by the time it was

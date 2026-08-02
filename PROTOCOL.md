@@ -6,8 +6,18 @@ of W1 are made by appending a dated amendment to §6, never by rewriting the
 text above it. The state of this file at tag `w0` is the version referred to in
 the paper.
 
-**Scope.** This is a protocol document, not a preregistration. No registry
-timestamp exists; third-party timing evidence comes from the mechanism in §5.
+**Scope.** The content of this document is fixed before W1 and anchored at tag
+`w0` by the mechanism in §5. It is additionally deposited as a preregistration,
+`docs/PREREGISTRATION.md`, which restates this protocol for a registry and adds
+nothing to it.
+
+The two dates are not the same and are reported separately. The registry
+records when the registration was *filed*; tag `w0` and its timestamp record
+when the content was *fixed*. The filing is expected to fall after 3 August
+2026, so this study does not claim to have been registered before the execution
+period began, and the paper states the interval between the two dates rather
+than eliding it. `tools/prereg_check.py` checks that the registration and this
+document have not drifted apart.
 
 ---
 
@@ -15,9 +25,9 @@ timestamp exists; third-party timing evidence comes from the mechanism in §5.
 
 Analytic autoethnography of a twelve-week, self-designed reskilling program
 undertaken by the first author to enter EU Cyber Resilience Act (CRA)
-compliance consulting. Execution period 3 August – 25 October 2026 (W1–W12).
-The CRA's reporting obligations take effect 11 September 2026, which falls in
-W6.
+compliance consulting. Execution period 3 August – 25 October 2026, that is
+2026-08-03 to 2026-10-25, W1–W12. The CRA's reporting obligations take effect
+11 September 2026 (2026-09-11), which falls in W6.
 
 ## 2. Instrument — Candidate-action log (for Principle 4)
 
@@ -59,6 +69,7 @@ alongside as a secondary descriptive, and are not used for the decision.
 `derived/principle4.json`. The verdict is whatever the tool computes.
 
 ## 3. Instrument — Gate adjudication
+<!-- inv:adjudication -->
 
 Pass or fail at each gate is adjudicated by the second author, not the first,
 and is recorded within 48 hours of the gate date on the criterion as fixed in
