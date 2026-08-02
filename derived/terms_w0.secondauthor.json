@@ -130,5 +130,7 @@
     "4": 1
   },
   "source": "docs/WEEK0_SNAPSHOT.md",
-  "source_table_sha256": "6013a7e5357e727848216aaa7ce42086355f90e9f3c7fa6c77d046d6c1cc2d88"
+  "source_table_sha256": "6013a7e5357e727848216aaa7ce42086355f90e9f3c7fa6c77d046d6c1cc2d88",
+  "whose": "second author; filled before docs/WEEK0_SNAPSHOT.md said whose ratings it wanted. Not the study's baseline -- kept because it records how much of this field the gate adjudicator knew.",
+  "superseded_at": "2026-08-02"
 }

@@ -1,5 +1,16 @@
 # Week-0 snapshot — the "before" measurement
 
+**Who fills this in: the first author, and nobody else.** The first author is
+the participant — the person who owns the venture M5 tests and who carries out
+the twelve weeks (PROTOCOL.md §1, §4). Every measurement below is a measurement
+of that person. The second author holds the repository and adjudicates the
+gates; their own knowledge of the CRA is not what this study measures, and a
+snapshot filled in by them measures the wrong person.
+
+This was not stated in the first version of this file, and Part B was filled in
+once by the second author in good faith before the omission was noticed. See
+the note above the Part B table.
+
 **Complete before 2026-08-03 (W1).** Tag the repository `w0` when done. After
 W1 begins this file is frozen; nothing below can be honestly re-measured once
 twelve weeks of learning have happened.
@@ -73,32 +84,41 @@ questions. If the answer came from reading the words, the rating is 1.
 This rule matters in a specific direction: an inflated W0 shrinks the measured
 gain at W12 and under-reports what was actually learned.
 
+> **Superseded once.** This table was first filled in by the second author, on
+> 2026-08-02, before it said whose ratings it wanted. Those ratings and the
+> record extracted from them are in this repository's history at `e8af4b0` and
+> are timestamped; they are not deleted, because a repository whose whole
+> purpose is an unedited record should not quietly drop the part that went
+> wrong. They are kept as the *second author's* baseline — useful in its own
+> right, since it says how much of this field the adjudicator knew — and are
+> not the study's measurement. The table below is the first author's.
+
 | # | Term | Rating (0–4) | One line: what I think it means |
 |---|---|---|---|
-| 1 | Cyber Resilience Act, Annex I | 0 | some kind of art |
-| 2 | Annex III important products, class I / II | 0 | some kind of products |
-| 3 | Default class / manufacturer self-assessment | 0 | word it used in factory |
-| 4 | Conformity assessment module (A / B+C / H) | 0 | assess something |
-| 5 | CE marking, declaration of conformity | 0 | computer economic |
-| 6 | Product with digital elements (PDE) | 4 | I always use it. And it's CLI. Because product from digital is what I want. |
-| 7 | SBOM | 0 | I don't know |
-| 8 | SPDX | 0 | I don't know |
-| 9 | CycloneDX | 0 | cycle something |
-| 10 | Syft | 0 | software |
-| 11 | Grype | 0 | I don't know |
-| 12 | CVE | 0 | I don't know |
-| 13 | CVSS | 0 | I don't know |
-| 14 | VEX | 0 | I don't know |
-| 15 | Actively exploited vulnerability | 3 | some secrets of private informations. |
-| 16 | Coordinated vulnerability disclosure policy | 2 | There are raws to erase some private information |
-| 17 | Support period / security update obligation | 2 | company have time to fix some product they made |
-| 18 | Technical documentation (Annex VII) | 1 | things like report |
-| 19 | Market surveillance authority | 1 | market wanna survive so they made it |
-| 20 | ENISA single reporting platform | 0 | some kind of platform |
+| 1 | Cyber Resilience Act, Annex I |  |  |
+| 2 | Annex III important products, class I / II |  |  |
+| 3 | Default class / manufacturer self-assessment |  |  |
+| 4 | Conformity assessment module (A / B+C / H) |  |  |
+| 5 | CE marking, declaration of conformity |  |  |
+| 6 | Product with digital elements (PDE) |  |  |
+| 7 | SBOM |  |  |
+| 8 | SPDX |  |  |
+| 9 | CycloneDX |  |  |
+| 10 | Syft |  |  |
+| 11 | Grype |  |  |
+| 12 | CVE |  |  |
+| 13 | CVSS |  |  |
+| 14 | VEX |  |  |
+| 15 | Actively exploited vulnerability |  |  |
+| 16 | Coordinated vulnerability disclosure policy |  |  |
+| 17 | Support period / security update obligation |  |  |
+| 18 | Technical documentation (Annex VII) |  |  |
+| 19 | Market surveillance authority |  |  |
+| 20 | ENISA single reporting platform |  |  |
 
 Record the total and the distribution, not just the total.
 
-**Total / 80:** 13 **Distribution** (count at each of 0,1,2,3,4): 14 / 2 / 2 / 1 / 1
+**Total / 80:** ______ **Distribution** (count at each of 0,1,2,3,4): ______
 
 When this table is filled, run `make terms-extract`. At W12 the procedure is
 `make terms-sheet` — which writes the same twenty terms with the ratings
