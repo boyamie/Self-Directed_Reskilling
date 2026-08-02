@@ -10,8 +10,11 @@ $(error no python3 with tomllib found -- need 3.11 or newer. Install one, or run
 endif
 
 # The work journal is kept outside this repository; only its hash manifest is
-# committed. See logs/journal/README.md.
-JOURNAL ?= ../paper/CS/journal
+# committed (logs/journal/README.md). Where it sits relative to here depends on
+# where this repository was cloned, so probe the sensible siblings rather than
+# hard-coding one clone's layout. Override with `make journal-manifest
+# JOURNAL=/path/to/journal`.
+JOURNAL ?= $(firstword $(wildcard ../journal ../paper/CS/journal ../../paper/CS/journal))
 
 .PHONY: help check validate aggregate export week snapshot ots-verify ots-backfill journal-manifest
 help:
@@ -39,6 +42,8 @@ week:
 	@$(PY) tools/calog.py new-week $(W)
 
 journal-manifest:
+	@test -n "$(JOURNAL)" || { echo "journal directory not found next to this clone."; \
+	  echo "run: make journal-manifest JOURNAL=/path/to/journal"; exit 1; }
 	@$(PY) tools/journal_manifest.py "$(JOURNAL)" --write
 
 ots-verify:
