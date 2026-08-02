@@ -50,32 +50,55 @@ one-line gloss recorded now is evidence; the same term rated 3 at W12 with a
 correct gloss is the finding. Write the gloss even where the rating is 0 — "no
 idea, sounds like it is about X" is usable data.
 
+### Two rating rules, fixed at W0 and applied identically at W12
+
+Both came up while the W0 ratings were being made. They are written down here
+because a scale applied one way at W0 and another way at W12 measures the
+change in the scale.
+
+**1. Rate the concept, not the English label.** The list is in English and the
+rater is not. If a label leaves you blank, that is a 0 — but if seeing it makes
+a Korean name surface unprompted, rate the concept and put that Korean name in
+the gloss. The test is whether it surfaces on its own; looking it up or
+translating it is a lookup and ends the measurement.
+
+**2. A gloss read off the English words is a 1, not a 3.** Several of these
+terms are transparent compounds — *actively exploited vulnerability*,
+*coordinated vulnerability disclosure policy*, *product with digital elements*,
+*technical documentation* — and a plausible sentence can be assembled from the
+words alone. That is not the same as knowing what the term denotes in this
+regulation, and 3 on this scale claims you could field a client's follow-up
+questions. If the answer came from reading the words, the rating is 1.
+
+This rule matters in a specific direction: an inflated W0 shrinks the measured
+gain at W12 and under-reports what was actually learned.
+
 | # | Term | Rating (0–4) | One line: what I think it means |
 |---|---|---|---|
-| 1 | Cyber Resilience Act, Annex I | | |
-| 2 | Annex III important products, class I / II | | |
-| 3 | Default class / manufacturer self-assessment | | |
-| 4 | Conformity assessment module (A / B+C / H) | | |
-| 5 | CE marking, declaration of conformity | | |
-| 6 | Product with digital elements (PDE) | | |
-| 7 | SBOM | | |
-| 8 | SPDX | | |
-| 9 | CycloneDX | | |
-| 10 | Syft | | |
-| 11 | Grype | | |
-| 12 | CVE | | |
-| 13 | CVSS | | |
-| 14 | VEX | | |
-| 15 | Actively exploited vulnerability | | |
-| 16 | Coordinated vulnerability disclosure policy | | |
-| 17 | Support period / security update obligation | | |
-| 18 | Technical documentation (Annex VII) | | |
-| 19 | Market surveillance authority | | |
-| 20 | ENISA single reporting platform | | |
+| 1 | Cyber Resilience Act, Annex I | 0 | some kind of art |
+| 2 | Annex III important products, class I / II | 0 | some kind of products |
+| 3 | Default class / manufacturer self-assessment | 0 | word it used in factory |
+| 4 | Conformity assessment module (A / B+C / H) | 0 | assess something |
+| 5 | CE marking, declaration of conformity | 0 | computer economic |
+| 6 | Product with digital elements (PDE) | 4 | I always use it. And it's CLI. Because product from digital is what I want. |
+| 7 | SBOM | 0 | I don't know |
+| 8 | SPDX | 0 | I don't know |
+| 9 | CycloneDX | 0 | cycle something |
+| 10 | Syft | 0 | software |
+| 11 | Grype | 0 | I don't know |
+| 12 | CVE | 0 | I don't know |
+| 13 | CVSS | 0 | I don't know |
+| 14 | VEX | 0 | I don't know |
+| 15 | Actively exploited vulnerability | 3 | some secrets of private informations. |
+| 16 | Coordinated vulnerability disclosure policy | 2 | There are raws to erase some private information |
+| 17 | Support period / security update obligation | 2 | company have time to fix some product they made |
+| 18 | Technical documentation (Annex VII) | 1 | things like report |
+| 19 | Market surveillance authority | 1 | market wanna survive so they made it |
+| 20 | ENISA single reporting platform | 0 | some kind of platform |
 
 Record the total and the distribution, not just the total.
 
-**Total / 80:** ______ **Distribution** (count at each of 0,1,2,3,4): ______
+**Total / 80:** 13 **Distribution** (count at each of 0,1,2,3,4): 14 / 2 / 2 / 1 / 1
 
 When this table is filled, run `make terms-extract`. At W12 the procedure is
 `make terms-sheet` — which writes the same twenty terms with the ratings

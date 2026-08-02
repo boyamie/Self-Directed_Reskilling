@@ -1,0 +1,134 @@
+{
+  "terms": [
+    {
+      "n": 1,
+      "term": "Cyber Resilience Act, Annex I",
+      "gloss": "some kind of art",
+      "rating": 0
+    },
+    {
+      "n": 2,
+      "term": "Annex III important products, class I / II",
+      "gloss": "some kind of products",
+      "rating": 0
+    },
+    {
+      "n": 3,
+      "term": "Default class / manufacturer self-assessment",
+      "gloss": "word it used in factory",
+      "rating": 0
+    },
+    {
+      "n": 4,
+      "term": "Conformity assessment module (A / B+C / H)",
+      "gloss": "assess something",
+      "rating": 0
+    },
+    {
+      "n": 5,
+      "term": "CE marking, declaration of conformity",
+      "gloss": "computer economic",
+      "rating": 0
+    },
+    {
+      "n": 6,
+      "term": "Product with digital elements (PDE)",
+      "gloss": "I always use it. And it's CLI. Because product from digital is what I want.",
+      "rating": 4
+    },
+    {
+      "n": 7,
+      "term": "SBOM",
+      "gloss": "I don't know",
+      "rating": 0
+    },
+    {
+      "n": 8,
+      "term": "SPDX",
+      "gloss": "I don't know",
+      "rating": 0
+    },
+    {
+      "n": 9,
+      "term": "CycloneDX",
+      "gloss": "cycle something",
+      "rating": 0
+    },
+    {
+      "n": 10,
+      "term": "Syft",
+      "gloss": "software",
+      "rating": 0
+    },
+    {
+      "n": 11,
+      "term": "Grype",
+      "gloss": "I don't know",
+      "rating": 0
+    },
+    {
+      "n": 12,
+      "term": "CVE",
+      "gloss": "I don't know",
+      "rating": 0
+    },
+    {
+      "n": 13,
+      "term": "CVSS",
+      "gloss": "I don't know",
+      "rating": 0
+    },
+    {
+      "n": 14,
+      "term": "VEX",
+      "gloss": "I don't know",
+      "rating": 0
+    },
+    {
+      "n": 15,
+      "term": "Actively exploited vulnerability",
+      "gloss": "some secrets of private informations.",
+      "rating": 3
+    },
+    {
+      "n": 16,
+      "term": "Coordinated vulnerability disclosure policy",
+      "gloss": "There are raws to erase some private information",
+      "rating": 2
+    },
+    {
+      "n": 17,
+      "term": "Support period / security update obligation",
+      "gloss": "company have time to fix some product they made",
+      "rating": 2
+    },
+    {
+      "n": 18,
+      "term": "Technical documentation (Annex VII)",
+      "gloss": "things like report",
+      "rating": 1
+    },
+    {
+      "n": 19,
+      "term": "Market surveillance authority",
+      "gloss": "market wanna survive so they made it",
+      "rating": 1
+    },
+    {
+      "n": 20,
+      "term": "ENISA single reporting platform",
+      "gloss": "some kind of platform",
+      "rating": 0
+    }
+  ],
+  "total": 13,
+  "distribution": {
+    "0": 14,
+    "1": 2,
+    "2": 2,
+    "3": 1,
+    "4": 1
+  },
+  "source": "docs/WEEK0_SNAPSHOT.md",
+  "source_table_sha256": "6013a7e5357e727848216aaa7ce42086355f90e9f3c7fa6c77d046d6c1cc2d88"
+}
