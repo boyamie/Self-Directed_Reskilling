@@ -165,6 +165,14 @@ Record the engine and any filters exactly as used. At W12 the same queries are
 run again, and a comparison is only meaningful if the method was written down
 rather than remembered.
 
+### A1. Query counts — to be run in a browser
+
+Run each query in **Naver** and in **Google**, both in a private window, and
+record the count shown. These cells are left for a browser run rather than
+filled from a search API: at W12 the comparison has to repeat the same
+procedure, and an API's result set is not the same population as a consumer
+search engine's.
+
 | Query (Korean) | Engine | Date | Results, first 2 pages | Notes on quality |
 |---|---|---|---|---|
 | 사이버복원력법 | | | | |
@@ -173,14 +181,57 @@ rather than remembered.
 | 취약점 신고 의무 EU | | | | |
 | CRA 자체평가 | | | | |
 
-Also record: how many Korean-language practitioner articles (not news
-reprints) exist on the CRA; which certification bodies have published Korean
-CRA guidance; whether any Korean-language SBOM tutorial exists.
+### A2. Content survey, 2026-08-02
+
+Conducted with a search API rather than a consumer engine, so it is a survey of
+what exists, not a reproducible count. Method: five Korean queries on the terms
+above plus targeted checks for Korean certification bodies and for a
+Korean-language SBOM tutorial. Not exhaustive.
+
+| Publisher | Type | Coverage | Practitioner-usable? |
+|---|---|---|---|
+| UL Solutions Korea | Certification body | CRA overview, conformity routes | Guidance, not procedure |
+| Bureau Veritas Korea | Certification body | "CRA 완벽 가이드" | Guidance |
+| Nemko Korea | Certification body | CRA scope, product security | Guidance |
+| TÜV SÜD | Certification body | CRA overview (Korean page) | Guidance |
+| 법무법인 화우 | Law firm | Newsletter, EU cybersecurity regulation | Legal framing |
+| 전자신문 · 데일리시큐 · 시사저널e · 보안뉴스 · 헬로티 | Trade press | Deadlines, SBOM supply-chain angle, interviews | News, not procedure |
+| Sparrow, EDB Korea, SK Devocean, ITPE/JackerLab | Vendor / engineer blogs | SBOM concept, build-tool plugins, Grype/Trivy scanning | Partly hands-on |
+| craevidence.com (Korean pages) | Dedicated CRA site | Product classification guide in Korean | Procedural |
+
+**Korean practitioner articles on the CRA, excluding news reprints:** roughly a
+dozen, and most are certification-body marketing or law-firm newsletters. What
+is thin is not explanation but procedure — almost nothing walks through
+producing an artifact end to end.
+
+**Certification bodies with Korean CRA guidance:** the international bodies have
+it (UL, Bureau Veritas, Nemko, TÜV SÜD). Among Korean bodies, KTR advertises
+cybersecurity testing and consulting and EU RED support, and KTL does overseas
+certification consulting, but no CRA-specific Korean guide from KTR, KTL or KCL
+surfaced.
+
+**Korean-language SBOM tutorial:** yes, several — SK Devocean, EDB Korea,
+Scribe Security's Korean pages, ITPE/JackerLab. They cover the concept and
+build-tool plugins. Hands-on Syft/Grype walk-throughs in Korean are scarcer.
+
+**A competitor is already selling this.** 에이스랩스 has launched *크래들*, a
+CRA reporting-response service, reported 2026. This is the M5 market, in Korea,
+already shipping. Recorded here because a rival discovered in week six reads as
+an obstacle, while a rival recorded before W1 is a condition of the study.
 
 **The gap, in one sentence** — what a Korean-reading compliance officer cannot
 currently get:
 
->
+> Explanation of the CRA in Korean is not scarce; what is missing is a Korean
+> walk-through that starts from a real product and ends at the artifacts the
+> regulation asks for — an SBOM, a vulnerability-handling process, technical
+> documentation — rather than describing what those artifacts are.
+
+**Consequence for Principle 3, recorded before W1.** The premise that the
+article series enters an empty niche is not supported. The niche is not empty;
+it is full of description and short on procedure. If the articles restate what
+the certification bodies already publish in Korean, Principle 3 should be
+reported as failing on its own terms even if the articles are well received.
 
 ---
 
