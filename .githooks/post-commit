@@ -1,14 +1,47 @@
 #!/bin/sh
 # OpenTimestamps anchoring — PROTOCOL.md section 5.
+#
 # Git commit dates are set by the committing machine and prove nothing about
 # when a commit was made. This anchors the commit hash to a public timeline.
-# No-op when `ots` is absent, so the hook never blocks a commit.
+#
+# The hook never blocks a commit. It does NOT stay quiet about failing: the
+# evidence in section 5 is the reason this repository exists, and a hook that
+# silently does nothing looks identical to one that worked. Every commit that
+# goes unstamped is announced and recorded in derived/ots/UNSTAMPED.txt, so
+# the gaps are countable later instead of invisible.
 
-command -v ots >/dev/null 2>&1 || exit 0
-
+root=$(git rev-parse --show-toplevel) || exit 0
+dir="$root/derived/ots"
 hash=$(git rev-parse HEAD)
-dir="derived/ots"
+
+# `ots` may be outside PATH when git is driven by a GUI client, an editor, or
+# cron, all of which start with a minimal environment. Look where pip puts it.
+ots_bin=$(command -v ots 2>/dev/null)
+if [ -z "$ots_bin" ]; then
+  for c in "$HOME/miniconda3/bin/ots" "$HOME/anaconda3/bin/ots" \
+           /opt/homebrew/bin/ots /usr/local/bin/ots \
+           "$HOME/.local/bin/ots" "$HOME/Library/Python/3.11/bin/ots"; do
+    [ -x "$c" ] && { ots_bin=$c; break; }
+  done
+fi
+
+note_unstamped() {
+  mkdir -p "$dir"
+  printf '%s\t%s\n' "$hash" "$1" >> "$dir/UNSTAMPED.txt"
+  echo "ots: WARNING — commit $hash is NOT timestamped ($1)." >&2
+  echo "ots: recorded in derived/ots/UNSTAMPED.txt; run 'make ots-backfill' once fixed." >&2
+}
+
+if [ -z "$ots_bin" ]; then
+  note_unstamped "ots not found; pip install opentimestamps-client"
+  exit 0
+fi
+
 mkdir -p "$dir"
 printf '%s\n' "$hash" > "$dir/$hash.txt"
-ots stamp "$dir/$hash.txt" >/dev/null 2>&1 || exit 0
-echo "ots: stamped $hash (commit the .ots proof, then 'ots upgrade' after ~a day)"
+if "$ots_bin" stamp "$dir/$hash.txt" >/dev/null 2>&1; then
+  echo "ots: stamped $hash (commit the .ots proof, then 'ots upgrade' after ~a day)"
+else
+  rm -f "$dir/$hash.txt"
+  note_unstamped "ots stamp failed; offline?"
+fi

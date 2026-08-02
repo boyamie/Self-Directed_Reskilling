@@ -18,7 +18,15 @@ import datetime as dt
 import json
 import pathlib
 import sys
-import tomllib
+
+if sys.version_info < (3, 11):
+    raise SystemExit(
+        "calog.py needs Python 3.11 or newer for tomllib; this is %d.%d at %s.\n"
+        "macOS ships /usr/bin/python3 as 3.9. Use a newer interpreter, e.g.\n"
+        "  make check PY=$(command -v python3.13)"
+        % (sys.version_info[0], sys.version_info[1], sys.executable))
+
+import tomllib  # noqa: E402  (guarded above so the failure is legible)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CA_DIR = ROOT / "logs" / "candidate-actions"
