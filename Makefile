@@ -49,7 +49,11 @@ journal-manifest:
 	  echo "run: make journal-manifest JOURNAL=/path/to/journal"; exit 1; }
 	@$(PY) tools/journal_manifest.py "$(JOURNAL)" --write
 
-# For whoever checks the record: 0 verified, 1 mismatch, 2 manifest unreadable.
+# Author's weekly check. NOT for a reader auditing the record: make returns 2
+# for any recipe failure, so a mismatch (1) and an unreadable manifest (2)
+# arrive here indistinguishable, and telling them apart is the whole point.
+# The reader's procedure calls tools/journal_manifest.py directly and passes
+# --manifest; see logs/journal/README.md.
 journal-verify:
 	@test -n "$(JOURNAL)" || { echo "journal directory not found next to this clone."; \
 	  echo "run: make journal-verify JOURNAL=/path/to/journal"; exit 2; }

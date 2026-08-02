@@ -3,7 +3,12 @@
 
     tools/journal_manifest.py <journal-dir>            print the manifest
     tools/journal_manifest.py <journal-dir> --write    update MANIFEST.tsv
-    tools/journal_manifest.py <journal-dir> --verify   check against MANIFEST.tsv
+    tools/journal_manifest.py <journal-dir> --verify [--manifest PATH]
+
+--manifest checks against a manifest other than the one in the working tree.
+Extract an older one with `git show <commit>:logs/journal/MANIFEST.tsv > /tmp/w03.tsv`
+rather than checking it out over the working copy: overwriting it leaves the
+next run silently comparing against the wrong week.
 
 Exit codes:
 
@@ -95,21 +100,27 @@ def read_manifest(path):
     return rows
 
 
-def cmd_verify(journal_dir):
-    """Recompute hashes and compare against the committed manifest.
+def cmd_verify(journal_dir, manifest_path=None):
+    """Recompute hashes and compare against a manifest.
 
     Scope: every file the manifest records must still hash to the recorded
     value. Files present on disk but absent from the manifest are reported and
     do not fail — during the study a manifest is always older than the journal,
     so new entries after it was written are the normal case, not tampering.
+
+    manifest_path defaults to the one in this working tree. Pass an extracted
+    copy of an older one (see --manifest) rather than checking it out over the
+    working tree: overwriting it makes the next run compare against the wrong
+    week with nothing in the output to say so.
     """
-    if not os.path.exists(OUT):
-        print("error: no manifest at %s\n"
-              "       nothing has been recorded yet; run `make journal-manifest`"
-              % os.path.relpath(OUT, ROOT), file=sys.stderr)
+    path = manifest_path or OUT
+    if not os.path.exists(path):
+        hint = ("       nothing has been recorded yet; run `make journal-manifest`"
+                if path == OUT else "       check the path")
+        print("error: no manifest at %s\n%s" % (path, hint), file=sys.stderr)
         return 2
     try:
-        recorded = read_manifest(OUT)
+        recorded = read_manifest(path)
     except (ManifestError, OSError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 2
@@ -134,7 +145,10 @@ def cmd_verify(journal_dir):
     for name in extra:
         print("not in manifest (ignored) %s" % name)
 
-    print("\n%d recorded, %d matched, %d changed, %d missing"
+    # Name the manifest in the result. Which week was compared against is part
+    # of the finding, not context the reader is expected to remember.
+    print("\nmanifest: %s" % path)
+    print("%d recorded, %d matched, %d changed, %d missing"
           % (len(recorded), matched, len(changed), len(missing)))
     if changed or missing:
         # stdout is block-buffered when piped while stderr is not, so without
@@ -153,20 +167,60 @@ def cmd_verify(journal_dir):
     return 0
 
 
+USAGE = """usage:
+  journal_manifest.py <journal-dir>                             print the manifest
+  journal_manifest.py <journal-dir> --write                     update MANIFEST.tsv
+  journal_manifest.py <journal-dir> --verify [--manifest PATH]  check against it"""
+
+
+def usage_error(message):
+    # Unknown options are refused rather than ignored. A silently accepted
+    # typo is the dangerous case here: `--verfy` used to fall through to the
+    # print path and exit 0, so a mistyped verification reported success.
+    print("error: %s\n%s" % (message, USAGE), file=sys.stderr)
+    return 2
+
+
 def main(argv):
     if not argv:
         print(__doc__.strip())
         return 2
     journal_dir = os.path.expanduser(argv[0])
-    flags = argv[1:]
-    write = "--write" in flags
+
+    write = verify = False
+    manifest_path = None
+    rest = argv[1:]
+    i = 0
+    while i < len(rest):
+        arg = rest[i]
+        if arg == "--write":
+            write = True
+        elif arg == "--verify":
+            verify = True
+        elif arg == "--manifest":
+            i += 1
+            if i >= len(rest) or rest[i].startswith("-"):
+                return usage_error("--manifest needs a path")
+            manifest_path = os.path.expanduser(rest[i])
+        elif arg.startswith("--manifest="):
+            manifest_path = os.path.expanduser(arg.split("=", 1)[1])
+            if not manifest_path:
+                return usage_error("--manifest needs a path")
+        else:
+            return usage_error("unknown option %r" % arg)
+        i += 1
+
+    if write and verify:
+        return usage_error("--write and --verify do different things; pick one")
+    if manifest_path and not verify:
+        return usage_error("--manifest applies to --verify only")
 
     if not os.path.isdir(journal_dir):
         print("error: %s is not a directory" % journal_dir, file=sys.stderr)
         return 2
 
-    if "--verify" in flags:
-        return cmd_verify(journal_dir)
+    if verify:
+        return cmd_verify(journal_dir, manifest_path)
 
     rows = manifest(journal_dir)
     if not rows:

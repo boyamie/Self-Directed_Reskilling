@@ -23,17 +23,29 @@ confidence; they recompute the hashes and compare against the manifest as it
 stood in that week's commit. A file edited afterwards will not match, and a
 file created afterwards will not appear in the earlier manifest at all.
 
-That check is one command, and it is the reader's, not the author's:
+That check is the reader's, not the author's. Extract the manifest for the
+week in question and point the tool at it:
 
 ```bash
-git checkout <commit-for-that-week> -- logs/journal/MANIFEST.tsv
-make journal-verify JOURNAL=/path/to/the/journal
+git show <commit-for-that-week>:logs/journal/MANIFEST.tsv > /tmp/w03.tsv
+python3 tools/journal_manifest.py /path/to/the/journal --verify --manifest /tmp/w03.tsv
 ```
 
 Exit `0` every recorded file still matches, `1` something changed or is gone,
-`2` the manifest itself could not be read. The third is kept separate from the
-second on purpose: a wrong path or a hand-edited manifest is an operational
-mistake and is not a finding about the journal.
+`2` the manifest itself could not be read or the arguments were wrong. The
+third is kept separate from the second on purpose: a wrong path or a
+hand-edited manifest is an operational mistake and is not a finding about the
+journal. The manifest actually used is printed with the result, so the output
+records which week was compared against.
+
+Two things this procedure deliberately avoids. It does not `git checkout` the
+old manifest over the working tree — that leaves the next run comparing
+against the wrong week with nothing in the output to say so. And it calls the
+script rather than `make journal-verify`, because **make reports 2 for any
+recipe failure**, collapsing "the journal does not match" into "I ran this
+wrong". The make target is for the author's weekly use, where the distinction
+does not carry any weight; a reader checking the record needs the script's own
+exit code.
 
 Files on disk that the manifest does not list are reported and do not fail the
 check. A manifest is always older than the journal it describes, so entries
